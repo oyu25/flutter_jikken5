@@ -120,7 +120,7 @@ class _QuizPageState extends State<QuizPage> {
           goToHome: () {
             // ホームに戻るボタンが押されたときの処理
             Navigator.of(context).popUntil((route) => route.isFirst);
-          },
+          }, isCorrectList: [],
         ),
       ),
     );

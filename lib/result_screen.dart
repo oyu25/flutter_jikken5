@@ -3,24 +3,27 @@ import 'quiz_page.dart';
 
 class ResultScreen extends StatelessWidget {
   final List<Question> questions;
-  final List<bool> userAnswers;
+  final List<bool?> userAnswers;
+  final List<bool?> isCorrectList;
   final VoidCallback retryQuiz;
   final VoidCallback goToHome;
 
   ResultScreen({
     required this.questions,
     required this.userAnswers,
+    required this.isCorrectList,
     required this.retryQuiz,
     required this.goToHome,
   });
-//quiz_pageのクイズを解いた内容とユーザーが押した〇☓をresult_screenにもて行きたい
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('結果発表'),
       ),
-
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -55,7 +58,7 @@ class ResultScreen extends StatelessWidget {
                         : Text(
                       '不正解',
                       style: TextStyle(
-                          color: Colors.red
+                        color: Colors.red,
                       ),
                     ),
                     onTap: () {
