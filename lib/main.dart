@@ -34,7 +34,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => QuizPage(selectedQuiz: 1)),
+                  MaterialPageRoute(builder: (context) => QuizPage()),
                   // QuizPage に遷移
                 );
               },

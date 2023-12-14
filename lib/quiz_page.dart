@@ -1,15 +1,6 @@
 import 'package:flutter/material.dart';
 import 'result_screen.dart';
 
-class Question {
-  final String text;
-  final bool answer;
-  final String explanation;
-
-  Question(this.text, this.answer, this.explanation);
-}
-
-
 void main() {
   runApp(MyApp());
 }
@@ -18,64 +9,51 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'クイズページ',
+      title: 'ログイン画面',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: QuizPage(selectedQuiz: 1),
+      home: QuizPage(),
     );
   }
 }
 
 class QuizPage extends StatefulWidget {
-  final int selectedQuiz;
-  QuizPage({required this.selectedQuiz});
-
   @override
   _QuizPageState createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
-  late List<bool?> userAnswers;
-  late List<Question> questions;
-
-  @override
-  void initState() {
-    super.initState();
-    userAnswers = List.filled(widget.selectedQuiz, null);
-    questions = [
-      Question(
-        '「あがいん」は、「お食べなさい」という意味である。',
-        true,
-        '「お食べなさい」という意味である。',
-      ),
-      Question(
-        '「あがらいん」は、「ちょっと家に入ってきなさい」という意味である。',
-        true,
-        '「ちょっと家に入ってきなさい」という意味である。',
-      ),
-      Question(
-        '「あぐど」は、「トンボ」という意味である。',
-        false,
-        '「かかと」という意味である。',
-      ),
-      // Add more questions as needed
-    ];
-  }
+  final List<Question> questions = [
+    Question(
+      '「あがいん」は、「お食べなさい」という意味である。',
+      true,
+      '「お食べなさい」という意味である。',
+    ),
+    Question(
+      '「あがらいん」は、「ちょっと家に入ってきなさい」という意味である。',
+      true,
+      '「ちょっと家に入ってきなさい」という意味である。',
+    ),
+    Question(
+      '「あぐど」は、「トンボ」という意味である。',
+      false,
+      '「かかと」という意味である。',
+    ),
+    // Add more questions as needed
+  ];
 
   int currentQuestionIndex = 0;
   int correctAnswers = 0;
+  int quizCount = 0;
 
   void checkAnswer(bool userAnswer) {
     String explanation = questions[currentQuestionIndex].explanation;
     bool isCorrect = userAnswer == questions[currentQuestionIndex].answer;
 
-    userAnswers[currentQuestionIndex] = isCorrect;
-
     String userSymbol = userAnswer ? '〇' : '☓';
-    String correctAnswerSymbol =
-    questions[currentQuestionIndex].answer ? '〇' : '☓';
+    String correctAnswerSymbol = questions[currentQuestionIndex].answer ? '〇' : '☓';
 
     showDialog(
       context: context,
@@ -100,13 +78,11 @@ class _QuizPageState extends State<QuizPage> {
                       currentQuestionIndex++;
                     } else {
                       // Quiz is finished, show the score
-                      _showResultDialog();
+                      showResultDialog();
                     }
                   });
                 },
-                child: Text(currentQuestionIndex < questions.length - 1
-                    ? '次へ'
-                    : '結果を見る'),
+                child: Text(currentQuestionIndex < questions.length - 1 ? '次へ' : '結果を見る'),
               ),
             ],
           ),
@@ -121,44 +97,34 @@ class _QuizPageState extends State<QuizPage> {
     }
   }
 
-  void _retryQuiz() {
-    // 同じクイズを再度表示
-    setState(() {
-      currentQuestionIndex = 0;
-      correctAnswers = 0;
-      userAnswers = List.filled(questions.length, null);
-    });
-    Navigator.of(context).pop(); // 結果画面を閉じる
-  }
-
-  void _goToHome() {
-    // ホームに戻る
-    Navigator.of(context).popUntil((route) => route.isFirst);
-  }
-
-  void _showResultDialog() {
-    print('Show result dialog called');
-    // 各回答が正解かどうかを示すブール値のリストを作成
-    List<bool?> isCorrectList = List.generate(
-      questions.length,
-          (index) => userAnswers[index] == questions[index].answer,
-    );
-
+  void showResultDialog() {
     // ResultScreen に遷移
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => ResultScreen(
           questions: questions,
-          userAnswers: userAnswers,
-          isCorrectList: isCorrectList,
-          retryQuiz: _retryQuiz,
-          goToHome: _goToHome,
+          userAnswers: List.generate(questions.length, (index) {
+            return index < correctAnswers;
+          }),
+          retryQuiz: () {
+            // もう一回ボタンが押されたときの処理
+            Navigator.of(context).pop(); // 結果画面を閉じる
+            // クイズをリセット
+            setState(() {
+              currentQuestionIndex = 0;
+              correctAnswers = 0;
+              quizCount = 0;
+            });
+          },
+          goToHome: () {
+            // ホームに戻るボタンが押されたときの処理
+            Navigator.of(context).popUntil((route) => route.isFirst);
+          },
         ),
       ),
     );
   }
-
 
 
   @override
@@ -202,4 +168,12 @@ class _QuizPageState extends State<QuizPage> {
       ),
     );
   }
+}
+
+class Question {
+  final String text;
+  final bool answer;
+  final String explanation;
+
+  Question(this.text, this.answer, this.explanation);
 }
