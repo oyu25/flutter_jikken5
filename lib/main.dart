@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'quiz_page.dart'; // quiz_page.dart ファイルをインポート
+import 'new_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,7 +35,7 @@ class HomePage extends StatelessWidget {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => QuizPage()),
+                  MaterialPageRoute(builder: (context) => NewPage()),
                   // QuizPage に遷移
                 );
               },

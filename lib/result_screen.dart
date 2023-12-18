@@ -3,20 +3,18 @@ import 'quiz_page.dart';
 
 class ResultScreen extends StatelessWidget {
   final List<Question> questions;
-  final List<bool?> userAnswers;
-  final List<bool?> isCorrectList;
+  final List<bool> userAnswers;
+  final List<bool?> userChoices;
   final VoidCallback retryQuiz;
   final VoidCallback goToHome;
 
   ResultScreen({
     required this.questions,
     required this.userAnswers,
-    required this.isCorrectList,
+    required this.userChoices,
     required this.retryQuiz,
     required this.goToHome,
   });
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -40,46 +38,43 @@ class ResultScreen extends StatelessWidget {
                 itemBuilder: (context, index) {
                   Question question = questions[index];
                   bool isCorrect = question.answer == userAnswers[index];
+                  bool isUserAnswerCorrect = userChoices[index] != null && userChoices[index]! == question.answer;
 
-                  return ListTile(
-                    title: Text(
-                      '問${index + 1}: ${question.text}',
-                      style: TextStyle(
-                        color: isCorrect ? Colors.green : Colors.red,
-                      ),
-                    ),
-                    subtitle: isCorrect
-                        ? Text(
-                      '正解',
-                      style: TextStyle(
-                        color: Colors.green,
-                      ),
-                    )
-                        : Text(
-                      '不正解',
-                      style: TextStyle(
-                        color: Colors.red,
-                      ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('解説'),
-                            content: Text(question.explanation),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('閉じる'),
+                  return Card(
+                    color: isUserAnswerCorrect ? Colors.green[100] : (isCorrect ? Colors.red[100] : null),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '問${index + 1}: ${question.text}',
+                            style: TextStyle(
+                              fontSize: 18.0,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 8.0),
+                          Text(
+                            '正解: ${question.answer ? '〇' : '☓'}',
+                            style: TextStyle(
+                              color: isCorrect || isUserAnswerCorrect ? Colors.green : null,
+                            ),
+                          ),
+                          if (userChoices[index] != null)
+                            Text(
+                              'あなたの回答: ${userChoices[index]! ? '〇' : '☓'}',
+                              style: TextStyle(
+                                color: isUserAnswerCorrect ? Colors.green : Colors.red,
                               ),
-                            ],
-                          );
-                        },
-                      );
-                    },
+                            ),
+                          SizedBox(height: 8.0),
+                          Text(
+                            '解説: ${question.explanation}',
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 },
               ),
